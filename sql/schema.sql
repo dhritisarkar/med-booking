@@ -1,15 +1,21 @@
 CREATE TABLE Patient (
     patient_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100)
+    name VARCHAR(100) NOT NULL,
+    gender VARCHAR(10),
+    phone VARCHAR(15)
 );
 
 CREATE TABLE Doctor (
     doctor_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100)
+    name VARCHAR(100) NOT NULL,
 );
 
 CREATE TABLE Appointment (
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
     patient_id INT,
     doctor_id INT
+    appointment_dat DATE,
+
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id)
+    FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)
 );
