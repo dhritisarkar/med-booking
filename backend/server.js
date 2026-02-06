@@ -20,3 +20,9 @@ app.get("/patients", (req, res) => {
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
+
+// Future APIs to be implemented:
+// POST /add-patient
+// GET /doctors
+// POST /add-appointment
+// GET /appointments
