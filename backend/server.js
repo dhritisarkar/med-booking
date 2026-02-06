@@ -1,14 +1,22 @@
 const express = require("express");
+const cors = require("cors");
+const db = require("./db");
 
 const app = express();
-const PORT = 3000;
-
+app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.send("Clinic Appointment System backend running");
+app.get("/patients", (req, res) => {
+  const sql = "SELECT * FROM Patient";
+  db.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.json(results);
+    }
+  });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });
