@@ -1,4 +1,4 @@
--- Table to store patient detils
+-- Table to store patient details
 CREATE TABLE Patient (
     patient_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE Doctor (
     name VARCHAR(100) NOT NULL
 );
 
--- Table to store appointment details 
+-- Table to store appointment details
 CREATE TABLE Appointment (
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
     patient_id INT,
