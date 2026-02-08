@@ -9,16 +9,16 @@ CREATE TABLE Patient (
 -- Table to store doctor details
 CREATE TABLE Doctor (
     doctor_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL
 );
 
 -- Table to store appointment details 
 CREATE TABLE Appointment (
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
     patient_id INT,
-    doctor_id INT
+    doctor_id INT,
     appointment_dat DATE,
 
-    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id)
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
     FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)
 );
