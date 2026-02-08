@@ -6,6 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Get all patients
 app.get("/patients", (req, res) => {
   const sql = "SELECT * FROM Patient";
   db.query(sql, (err, results) => {
@@ -15,10 +16,6 @@ app.get("/patients", (req, res) => {
       res.json(results);
     }
   });
-});
-
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
 });
 
 // Add a new patient
@@ -35,8 +32,23 @@ app.post("/add-patient", (req, res) => {
   });
 });
 
+// Get all doctors
+app.get("/doctors", (req, res) => {
+  const sql = "SELECT * FROM Doctor";
+  db.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+});
+
 // Upcoming work:
-// - Doctor APIs
 // - Appointment creation
 // - Appointment listing with joins
 // - Frontend integration
