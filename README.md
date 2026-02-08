@@ -1,34 +1,62 @@
-Clinic Appointment System (DBMS Project)
+# Medical Appointment Booking System 🏥
 
-This project is a Clinic Appointment Management System developed as part of a Database Management Systems (DBMS) course.
-The aim of the project is to design a relational database and connect it with a simple backend to manage clinic operations.
+This project is a medical appointment booking system developed as part of a DBMS course project.  
+The goal of the project is to understand relational database design and backend API development.
 
+---
 
+## Project Overview
 
-Project Overview
+The system focuses on managing:
+- Patient records
+- Doctor information
+- Medical appointments between patients and doctors
 
-The system models a real-world clinic where:
-	•	Patients can be registered
-	•	Doctors are stored in the system
-	•	Appointments link patients and doctors using database relationships
+At this stage, the project primarily concentrates on database schema design and backend structure, with APIs being developed incrementally.
 
-The focus of this project is on database design, relationships, and backend connectivity, rather than UI polish.
+---
 
+## Technologies Used
 
+- Node.js
+- Express.js
+- MariaDB (MySQL)
+- Git and GitHub
 
-Tech Stack
-	•	Database: MariaDB / MySQL
-	•	Backend: Node.js with Express
-	•	SQL: Relational schema with primary and foreign keys
+---
 
+## Database Design
 
+The database is designed using a relational model and consists of:
+- **Patient** entity to store patient details
+- **Doctor** entity to store doctor details
+- **Appointment** entity to connect patients and doctors using foreign keys
 
-Database Design
+This structure ensures data consistency and supports future expansion.
 
-The database consists of three main tables:
-	•	Patient – stores patient details
-	•	Doctor – stores doctor details
-	•	Appointment – connects patients and doctors using foreign keys
+---
 
-Foreign keys are used to maintain a connection between tables.
+## Current Progress
 
+- Database schema defined
+- Backend server setup completed
+- Initial APIs implemented for data retrieval and insertion
+- Backend and database connectivity established
+
+---
+
+## Future Planning 🚧
+
+Planned enhancements include:
+- Complete appointment management APIs
+- Advanced SQL queries using JOIN operations
+- Backend validations and error handling
+- Frontend integration
+- Performance improvements and testing
+
+---
+
+## Contributors
+
+- Dhriti Sarkar
+- Heer Patel
