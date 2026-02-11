@@ -17,7 +17,7 @@ CREATE TABLE Appointment (
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
     patient_id INT,
     doctor_id INT,
-    appointment_dat DATE,
+    appointment_date DATE,
 
     FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
     FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)
