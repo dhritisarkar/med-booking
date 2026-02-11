@@ -18,6 +18,7 @@ app.get("/patients", (req, res) => {
   });
 });
 
+
 // Add a new patient
 app.post("/add-patient", (req, res) => {
   const { name, gender, phone } = req.body;
@@ -32,6 +33,7 @@ app.post("/add-patient", (req, res) => {
   });
 });
 
+
 // Get all doctors
 app.get("/doctors", (req, res) => {
   const sql = "SELECT * FROM Doctor";
@@ -44,6 +46,44 @@ app.get("/doctors", (req, res) => {
   });
 });
 
+
+// Add new appointment
+app.post("/add-appointment", (req, res) => {
+  const { patient_id, doctor_id, appointment_date } = req.body;
+
+  const sql = "INSERT INTO Appointment (patient_id, doctor_id, appointment_date) VALUES (?, ?, ?)";
+  
+  db.query(sql, [patient_id, doctor_id, appointment_date], (err) => {
+    if (err) {
+      res.status(500).json({ error: "Failed to create appointment" });
+    } else {
+      res.json({ message: "Appointment created successfully" });
+    }
+  });
+});
+
+
+// Get all appointments with patient and doctor names
+app.get("/appointments", (req, res) => {
+  const sql = `
+    SELECT 
+      Appointment.appointment_id,
+      Patient.name AS patient_name,
+      Doctor.name AS doctor_name,
+      Appointment.appointment_date
+    FROM Appointment
+    JOIN Patient ON Appointment.patient_id = Patient.patient_id
+    JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.json(results);
+    }
+  });
+});
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
