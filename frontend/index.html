@@ -1,49 +1,193 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Clinic System</title>
+    <title>Clinic Management System</title>
 </head>
 <body>
 
-<h2>Doctors List</h2>
+<h1>Clinic Management System</h1>
 
+<!-- ================= DOCTORS ================= -->
+<h2>Doctors List</h2>
 <ul id="doctorList"></ul>
 
-<p id="errorMessage" style="color: red;"></p>
+<!-- ================= ADD PATIENT ================= -->
+<h2>Add Patient</h2>
+
+<input type="text" id="patientName" placeholder="Name">
+
+<select id="patientGender">
+    <option value="">Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+</select>
+
+<input type="text" id="patientPhone" placeholder="Phone">
+
+<button onclick="addPatient()">Add Patient</button>
+
+<p id="message" style="color: green;"></p>
+
+<!-- ================= PATIENT TABLE ================= -->
+<h2>All Patients</h2>
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+    </tr>
+    </thead>
+    <tbody id="patientTableBody"></tbody>
+</table>
+
+<!-- ================= BOOK APPOINTMENT ================= -->
+<h2>Book Appointment</h2>
+
+<input type="date" id="appointmentDate">
+
+<select id="appointmentTime">
+    <option value="">Select Time Slot</option>
+    <option value="09:00:00">09:00 AM</option>
+    <option value="10:00:00">10:00 AM</option>
+    <option value="11:00:00">11:00 AM</option>
+    <option value="14:00:00">02:00 PM</option>
+    <option value="15:00:00">03:00 PM</option>
+</select>
+
+<input type="number" id="patientId" placeholder="Patient ID">
+<input type="number" id="doctorId" placeholder="Doctor ID">
+
+<button onclick="bookAppointment()">Book Appointment</button>
+
+<!-- ================= APPOINTMENT TABLE ================= -->
+<h2>All Appointments</h2>
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>Appointment ID</th>
+        <th>Patient Name</th>
+        <th>Doctor Name</th>
+        <th>Date & Time</th>
+    </tr>
+    </thead>
+    <tbody id="appointmentTableBody"></tbody>
+</table>
 
 <script>
+
+    // ================= LOAD DOCTORS =================
     async function loadDoctors() {
-        try {
-            const response = await fetch("http://localhost:3000/doctors");
+        const response = await fetch("http://localhost:3000/doctors");
+        const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error("Server response was not OK");
-            }
+        const list = document.getElementById("doctorList");
+        list.innerHTML = "";
 
-            const data = await response.json();
-
-            const list = document.getElementById("doctorList");
-            list.innerHTML = ""; // clear old data
-
-            if (data.length === 0) {
-                list.innerHTML = "<li>No doctors available</li>";
-                return;
-            }
-
-            data.forEach(doctor => {
-                const li = document.createElement("li");
-                li.textContent = doctor.name;
-                list.appendChild(li);
-            });
-
-        } catch (error) {
-            console.error("Error fetching doctors:", error);
-            document.getElementById("errorMessage").textContent =
-                "Cannot connect to server. Make sure backend is running.";
-        }
+        data.forEach(doctor => {
+            const li = document.createElement("li");
+            li.textContent = `ID: ${doctor.doctor_id} - ${doctor.name}`;
+            list.appendChild(li);
+        });
     }
 
+    // ================= LOAD PATIENTS =================
+    async function loadPatients() {
+        const response = await fetch("http://localhost:3000/patients");
+        const data = await response.json();
+
+        const table = document.getElementById("patientTableBody");
+        table.innerHTML = "";
+
+        data.forEach(patient => {
+            const row = `
+                <tr>
+                    <td>${patient.patient_id}</td>
+                    <td>${patient.name}</td>
+                    <td>${patient.gender}</td>
+                    <td>${patient.phone}</td>
+                </tr>
+            `;
+            table.innerHTML += row;
+        });
+    }
+
+    // ================= ADD PATIENT =================
+    async function addPatient() {
+        const name = document.getElementById("patientName").value;
+        const gender = document.getElementById("patientGender").value;
+        const phone = document.getElementById("patientPhone").value;
+
+        if (!name || !gender || !phone) {
+            alert("Please fill all patient fields");
+            return;
+        }
+
+        await fetch("http://localhost:3000/add-patient", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, gender, phone })
+        });
+
+        document.getElementById("message").textContent = "Patient added successfully";
+
+        loadPatients();
+    }
+
+    // ================= BOOK APPOINTMENT =================
+    async function bookAppointment() {
+
+        const date = document.getElementById("appointmentDate").value;
+        const time = document.getElementById("appointmentTime").value;
+        const patient_id = document.getElementById("patientId").value;
+        const doctor_id = document.getElementById("doctorId").value;
+
+        if (!date || !time || !patient_id || !doctor_id) {
+            alert("Please fill all appointment fields");
+            return;
+        }
+
+        const appointment_date = date + " " + time;
+
+        await fetch("http://localhost:3000/add-appointment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ patient_id, doctor_id, appointment_date })
+        });
+
+        loadAppointments();
+    }
+
+    // ================= LOAD APPOINTMENTS =================
+    async function loadAppointments() {
+        const response = await fetch("http://localhost:3000/appointments");
+        const data = await response.json();
+
+        const table = document.getElementById("appointmentTableBody");
+        table.innerHTML = "";
+
+        data.forEach(app => {
+            const formattedDate = new Date(app.appointment_date).toLocaleString();
+
+            const row = `
+                <tr>
+                    <td>${app.appointment_id}</td>
+                    <td>${app.patient_name}</td>
+                    <td>${app.doctor_name}</td>
+                    <td>${formattedDate}</td>
+                </tr>
+            `;
+            table.innerHTML += row;
+        });
+    }
+
+    // Initial Load
     loadDoctors();
+    loadPatients();
+    loadAppointments();
+
 </script>
 
 </body>

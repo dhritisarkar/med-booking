@@ -46,7 +46,6 @@ app.get("/doctors", (req, res) => {
   });
 });
 
-
 // Add new appointment
 app.post("/add-appointment", (req, res) => {
   const { patient_id, doctor_id, appointment_date } = req.body;
@@ -86,6 +85,10 @@ app.get("/appointments", (req, res) => {
 });
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
+});
+
+app.get('/', (req, res) => {
+    res.send("Med Booking Backend Running");
 });
 
 // Upcoming work:
