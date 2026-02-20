@@ -1,64 +1,105 @@
 const express = require("express");
+const mysql = require("mysql2");
 const cors = require("cors");
-const db = require("./db");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Get all patients
-app.get("/patients", (req, res) => {
-  const sql = "SELECT * FROM Patient";
-  db.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err });
-    } else {
-      res.json(results);
-    }
-  });
+// ================= DATABASE CONNECTION =================
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "StrongPassword123",   // ← change if needed
+    database: "clinic_db1"
 });
 
-
-// Add a new patient
-app.post("/add-patient", (req, res) => {
-  const { name, gender, phone } = req.body;
-
-  const sql = "INSERT INTO Patient (name, gender, phone) VALUES (?, ?, ?)";
-  db.query(sql, [name, gender, phone], (err) => {
+db.connect((err) => {
     if (err) {
-      res.status(500).json({ error: "Failed to add patient" });
+        console.log("Database connection failed:", err);
     } else {
-      res.json({ message: "Patient added successfully" });
+        console.log("Connected to MySQL");
     }
-  });
 });
 
-
-// Get all doctors
+// ================= GET DOCTORS =================
 app.get("/doctors", (req, res) => {
-  const sql = "SELECT * FROM Doctor";
-  db.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err });
-    } else {
-      res.json(results);
-    }
-  });
+    db.query("SELECT * FROM Doctor", (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.json(result);
+        }
+    });
 });
 
-// Add new appointment
-app.post("/add-appointment", (req, res) => {
-  const { patient_id, doctor_id, appointment_date } = req.body;
+// ================= GET PATIENTS =================
+app.get("/patients", (req, res) => {
+    db.query("SELECT * FROM Patient", (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.json(result);
+        }
+    });
+});
 
-  const sql = "INSERT INTO Appointment (patient_id, doctor_id, appointment_date) VALUES (?, ?, ?)";
-  
-  db.query(sql, [patient_id, doctor_id, appointment_date], (err) => {
-    if (err) {
-      res.status(500).json({ error: "Failed to create appointment" });
-    } else {
-      res.json({ message: "Appointment created successfully" });
-    }
-  });
+// ================= GET APPOINTMENTS (WITH JOIN) =================
+app.get("/appointments", (req, res) => {
+
+    const sql = `
+        SELECT
+            a.appointment_id,
+            p.name AS patient_name,
+            d.name AS doctor_name,
+            a.appointment_date
+        FROM Appointment a
+        JOIN Patient p ON a.patient_id = p.patient_id
+        JOIN Doctor d ON a.doctor_id = d.doctor_id
+    `;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+// ================= ADD PATIENT =================
+app.post("/add-patient", (req, res) => {
+
+    const { name, gender, phone } = req.body;
+
+    const sql = "INSERT INTO Patient (name, gender, phone) VALUES (?, ?, ?)";
+
+    db.query(sql, [name, gender, phone], (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.send("Patient added successfully");
+        }
+    });
+});
+
+// ================= ADD APPOINTMENT =================
+app.post("/add-appointment", (req, res) => {
+
+    const { patient_id, doctor_id, appointment_date } = req.body;
+
+    const sql = `
+        INSERT INTO Appointment (patient_id, doctor_id, appointment_date)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(sql, [patient_id, doctor_id, appointment_date], (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.send("Appointment booked successfully");
+        }
+    });
 });
 
 // ================= DELETE APPOINTMENT =================
@@ -70,7 +111,6 @@ app.delete("/delete-appointment/:id", (req, res) => {
 
     db.query(sql, [appointmentId], (err, result) => {
         if (err) {
-            console.log(err);
             res.status(500).send("Error deleting appointment");
         } else {
             res.send("Appointment deleted successfully");
@@ -78,36 +118,23 @@ app.delete("/delete-appointment/:id", (req, res) => {
     });
 });
 
-// Get all appointments with patient and doctor names
-app.get("/appointments", (req, res) => {
-  const sql = `
-    SELECT 
-      Appointment.appointment_id,
-      Patient.name AS patient_name,
-      Doctor.name AS doctor_name,
-      Appointment.appointment_date
-    FROM Appointment
-    JOIN Patient ON Appointment.patient_id = Patient.patient_id
-    JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
-  `;
+// ================= DELETE PATIENT =================
+app.delete("/delete-patient/:id", (req, res) => {
 
-  db.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err });
-    } else {
-      res.json(results);
-    }
-  });
+    const patientId = req.params.id;
+
+    const sql = "DELETE FROM Patient WHERE patient_id = ?";
+
+    db.query(sql, [patientId], (err, result) => {
+        if (err) {
+            res.status(500).send("Error deleting patient");
+        } else {
+            res.send("Patient and related appointments deleted successfully");
+        }
+    });
 });
+
+// ================= START SERVER =================
 app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+    console.log("Server running on http://localhost:3000");
 });
-
-app.get('/', (req, res) => {
-    res.send("Med Booking Backend Running");
-});
-
-// Upcoming work:
-// - Appointment creation
-// - Appointment listing with joins
-// - Frontend integration
