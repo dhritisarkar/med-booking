@@ -61,6 +61,22 @@ app.post("/add-appointment", (req, res) => {
   });
 });
 
+// ================= DELETE APPOINTMENT =================
+app.delete("/delete-appointment/:id", (req, res) => {
+
+    const appointmentId = req.params.id;
+
+    const sql = "DELETE FROM Appointment WHERE appointment_id = ?";
+
+    db.query(sql, [appointmentId], (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error deleting appointment");
+        } else {
+            res.send("Appointment deleted successfully");
+        }
+    });
+});
 
 // Get all appointments with patient and doctor names
 app.get("/appointments", (req, res) => {
