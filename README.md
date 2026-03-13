@@ -95,6 +95,7 @@ Appointments display the following:
 - Patient Name
 - Doctor Name
 - Date and Time
+  
 This information is retreived using SQLJOIN queries.
 
 ---
