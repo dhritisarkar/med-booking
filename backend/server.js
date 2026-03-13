@@ -1,140 +1,216 @@
-const express = require("express");
-const mysql = require("mysql2");
-const cors = require("cors");
+const express = require("express")
+const mysql = require("mysql2")
+const cors = require("cors")
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const app = express()
 
-// ================= DATABASE CONNECTION =================
+app.use(cors())
+app.use(express.json())
+
+/* DATABASE CONNECTION */
+
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "StrongPassword123",   // ← change if needed
-    database: "clinic_db1"
-});
 
-db.connect((err) => {
-    if (err) {
-        console.log("Database connection failed:", err);
-    } else {
-        console.log("Connected to MySQL");
-    }
-});
+host: "localhost",
+user: "root",
+password: "StrongPassword123",
+database: "clinic_db1"
 
-// ================= GET DOCTORS =================
-app.get("/doctors", (req, res) => {
-    db.query("SELECT * FROM Doctor", (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.json(result);
-        }
-    });
-});
+})
 
-// ================= GET PATIENTS =================
-app.get("/patients", (req, res) => {
-    db.query("SELECT * FROM Patient", (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.json(result);
-        }
-    });
-});
+db.connect(err => {
 
-// ================= GET APPOINTMENTS (WITH JOIN) =================
-app.get("/appointments", (req, res) => {
+if(err){
+console.log("Database connection failed")
+return
+}
 
-    const sql = `
-        SELECT
-            a.appointment_id,
-            p.name AS patient_name,
-            d.name AS doctor_name,
-            a.appointment_date
-        FROM Appointment a
-        JOIN Patient p ON a.patient_id = p.patient_id
-        JOIN Doctor d ON a.doctor_id = d.doctor_id
-    `;
+console.log("Connected to MariaDB")
 
-    db.query(sql, (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.json(result);
-        }
-    });
-});
+})
 
-// ================= ADD PATIENT =================
-app.post("/add-patient", (req, res) => {
+/* ================= DOCTORS ================= */
 
-    const { name, gender, phone } = req.body;
+app.get("/doctors",(req,res)=>{
 
-    const sql = "INSERT INTO Patient (name, gender, phone) VALUES (?, ?, ?)";
+const sql = "SELECT * FROM Doctor"
 
-    db.query(sql, [name, gender, phone], (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.send("Patient added successfully");
-        }
-    });
-});
+db.query(sql,(err,result)=>{
 
-// ================= ADD APPOINTMENT =================
-app.post("/add-appointment", (req, res) => {
+if(err){
+console.log(err)
+res.status(500).send("Error fetching doctors")
+return
+}
 
-    const { patient_id, doctor_id, appointment_date } = req.body;
+res.json(result)
 
-    const sql = `
-        INSERT INTO Appointment (patient_id, doctor_id, appointment_date)
-        VALUES (?, ?, ?)
-    `;
+})
 
-    db.query(sql, [patient_id, doctor_id, appointment_date], (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.send("Appointment booked successfully");
-        }
-    });
-});
+})
 
-// ================= DELETE APPOINTMENT =================
-app.delete("/delete-appointment/:id", (req, res) => {
+app.post("/add-doctor",(req,res)=>{
 
-    const appointmentId = req.params.id;
+const {name} = req.body
 
-    const sql = "DELETE FROM Appointment WHERE appointment_id = ?";
+const sql = "INSERT INTO Doctor (name) VALUES (?)"
 
-    db.query(sql, [appointmentId], (err, result) => {
-        if (err) {
-            res.status(500).send("Error deleting appointment");
-        } else {
-            res.send("Appointment deleted successfully");
-        }
-    });
-});
+db.query(sql,[name],(err,result)=>{
 
-// ================= DELETE PATIENT =================
-app.delete("/delete-patient/:id", (req, res) => {
+if(err){
+console.log(err)
+res.status(500).send("Error adding doctor")
+return
+}
 
-    const patientId = req.params.id;
+res.send("Doctor added successfully")
 
-    const sql = "DELETE FROM Patient WHERE patient_id = ?";
+})
 
-    db.query(sql, [patientId], (err, result) => {
-        if (err) {
-            res.status(500).send("Error deleting patient");
-        } else {
-            res.send("Patient and related appointments deleted successfully");
-        }
-    });
-});
+})
 
-// ================= START SERVER =================
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
-});
+/* ================= PATIENTS ================= */
+
+app.get("/patients",(req,res)=>{
+
+const sql = "SELECT * FROM Patient"
+
+db.query(sql,(err,result)=>{
+
+if(err){
+console.log(err)
+res.status(500).send("Error fetching patients")
+return
+}
+
+res.json(result)
+
+})
+
+})
+
+app.post("/add-patient",(req,res)=>{
+
+const {name,gender,phone} = req.body
+
+const sql = "INSERT INTO Patient (name,gender,phone) VALUES (?,?,?)"
+
+db.query(sql,[name,gender,phone],(err,result)=>{
+
+if(err){
+console.log(err)
+res.status(500).send("Error adding patient")
+return
+}
+
+res.send("Patient added successfully")
+
+})
+
+})
+
+app.delete("/delete-patient/:id",(req,res)=>{
+
+const id = req.params.id
+
+const deleteAppointments = "DELETE FROM Appointment WHERE patient_id=?"
+
+db.query(deleteAppointments,[id],()=>{
+
+const deletePatient = "DELETE FROM Patient WHERE patient_id=?"
+
+db.query(deletePatient,[id],(err,result)=>{
+
+if(err){
+console.log(err)
+res.status(500).send("Error deleting patient")
+return
+}
+
+res.send("Patient deleted")
+
+})
+
+})
+
+})
+
+/* ================= APPOINTMENTS ================= */
+
+app.get("/appointments",(req,res)=>{
+
+const sql = `
+SELECT
+Appointment.appointment_id,
+Patient.name AS patient_name,
+Doctor.name AS doctor_name,
+Appointment.appointment_date
+FROM Appointment
+JOIN Patient ON Appointment.patient_id = Patient.patient_id
+JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
+`
+
+db.query(sql,(err,result)=>{
+
+if(err){
+console.log(err)
+res.status(500).send("Error fetching appointments")
+return
+}
+
+res.json(result)
+
+})
+
+})
+
+app.post("/add-appointment",(req,res)=>{
+
+const {patient_id,doctor_id,appointment_date} = req.body
+
+const sql = `
+INSERT INTO Appointment (patient_id,doctor_id,appointment_date)
+VALUES (?,?,?)
+`
+
+db.query(sql,[patient_id,doctor_id,appointment_date],(err,result)=>{
+
+if(err){
+console.log(err)
+res.status(500).send("Error booking appointment")
+return
+}
+
+res.send("Appointment booked")
+
+})
+
+})
+
+app.delete("/delete-appointment/:id",(req,res)=>{
+
+const id = req.params.id
+
+const sql = "DELETE FROM Appointment WHERE appointment_id=?"
+
+db.query(sql,[id],(err,result)=>{
+
+if(err){
+console.log(err)
+res.status(500).send("Error deleting appointment")
+return
+}
+
+res.send("Appointment deleted")
+
+})
+
+})
+
+/* ================= SERVER ================= */
+
+app.listen(3000,()=>{
+
+console.log("Server running on http://localhost:3000")
+
+})
