@@ -1,0 +1,14 @@
+[Unit]
+Description=Clinic Management Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=clinic_user
+ExecStart=node backend/server.js
+ExecStop=pkill node
+Restart=always
+Environment="PORT=3000"
+
+[Install]
+WantedBy=multi-user.target
