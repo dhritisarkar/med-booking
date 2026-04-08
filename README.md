@@ -26,7 +26,7 @@ It demonstrates how a backend server interacts with a relational database and ho
 - Node.js: Backend runtime environment
 - Express.js: Web server framework for API creation
 - MariaDB (MySQL): Relational database managemnet system
-- HTML + CSS: Frontened interface
+- HTML + CSS: Frontend interface
 - Git and GitHub: Version control and project collaboration
 - JavaScript (Fetch API: Communication with backend APIs
 
@@ -74,19 +74,22 @@ The system currently supports the following features:
 - Automatically generated patient IDs
 - Display all patients in a table
 - Delete a patient with confirmation warning
+- Search patients using a search box (real-time filtering)
+- Edit patient details using a popup form
 
-When a patient is deleted, all assosciated appointments are also removed to maintain database consistency
+When a patient is deleted, all associated appointments are also removed to maintain database consistency
 
 2) Doctor Management:
 - Add new doctors
 - View all doctors in a dedicated table
-- Doctors are automically available for appointmet booking
+- Doctors are automatically available for appointment booking
+- Edit doctor details
 
 3) Appointment Management:
 - Book appointments for patients
 - Select doctors from a dropdown list
 - Choose predefined time slots
-- Store appointment date and time usinh DATETIME
+- Store appointment date and time using DATETIME
 - View all appointments in a table
 - Delete appointments when required
 
@@ -96,20 +99,29 @@ Appointments display the following:
 - Doctor Name
 - Date and Time
   
-This information is retreived using SQLJOIN queries.
+This information is retrieved using SQLJOIN queries.
+
+4) Authentication:
+The system includes a basic login system:
+- Login page with username and password
+- Access control using localStorage
+- Users must log in to access the system
+- Logout functionality is implemented
 
 ---
 
 ## API Endpoints Implemented
 
 - `GET /doctors` → Retrieve all doctors
-- `GET /patients` → Retrieve all patients
+- `GET /patients` → Retrieve all patients (with search support)
 - `GET /appointments` → Retrieve appointment details using JOIN
 - `POST /add-patient` → Add a new patient
 - `POST /add-appointment` → Book a new appointment
 - `POST /add-doctor` → Adds a new doctor to the system
 - `DELETE /delete-patient/:id` → Delete a patient and their realted appointments
 - `DELETE /delete-appointment/:id` → Delete an appointment
+- `PUT /update-patient/:id` → Update patient details
+- `PUT /update-doctor/:id` → Update doctor details
 
 ---
 
@@ -123,8 +135,12 @@ Key UI features include:
 - Fixed appointment time slots
 - Confirmation alerts for delete operations
 - Clean hospital-style UI with a professional baby-blue theme
+- Search bar for patients
+- Dropdown selection for both doctors and patients
+- Edit popup (modal) for updating records
+- Logout button for session control
 
-The UI commicates with the backened using the JavaScript Fetch API
+The UI communicates with the backend using the JavaScript Fetch API
 
 ---
 
@@ -143,6 +159,10 @@ Implememted componenets include:
 - Appointment scheduling
 - Delete operations with relational consistency
 - Improved UI design
+- Patient search functionality implemented
+- Edit functionality for patient and doctor added
+- Basic authentication system implemented
+- UI redesigned for better usability
 
 The application demonstrates full interaction between frontend, backend and database layers
 
@@ -152,9 +172,8 @@ The application demonstrates full interaction between frontend, backend and data
 
 Possible improvements include:
 
-- Patient search functionality
-- Editing patient and doctor records
-- Authentication for administrators
+- Role-based access control
+- Appointment conflict checkung
 
 ---
 
