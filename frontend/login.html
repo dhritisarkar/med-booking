@@ -5,94 +5,81 @@
 
     <style>
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #e6f2ff; /* baby blue */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: Arial;
+            background:#eef7fc;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
         }
 
-        .login-container {
-            background: white;
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 300px;
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #2a4a5e;
+        .login-box {
+            background:white;
+            padding:30px;
+            border-radius:8px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            text-align:center;
         }
 
         input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #c8e3f2;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #5aaed6;
+            display:block;
+            margin:10px auto;
+            padding:8px;
+            width:200px;
+            border:1px solid #c8e3f2;
+            border-radius:4px;
         }
 
         button {
-            width: 100%;
-            padding: 10px;
-            background: #a7d8f0;
-            border: none;
-            color: #2a4a5e;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
+            padding:8px 15px;
+            background:#a7d8f0;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
         }
 
         button:hover {
-            background: #8cc9e8;
+            background:#8cc9e8;
         }
-
-        #error {
-            color: red;
-            margin-top: 10px;
-        }
-
     </style>
 </head>
 
 <body>
 
-<div class="login-container">
+<script>
+    // If already logged in → skip login page
+    if(localStorage.getItem("loggedIn") === "true"){
+        window.location.href = "index.html";
+    }
+</script>
 
+<div class="login-box">
     <h2>Login</h2>
 
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
 
     <button onclick="login()">Login</button>
-
-    <p id="error"></p>
-
 </div>
 
 <script>
 
-function login() {
-    const user = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
+    function login(){
 
-    if (user === "admin" && pass === "admin123") {
-        localStorage.setItem("loggedIn", "true");
-        window.location.href = "index.html";
-    } else {
-        document.getElementById("error").innerText = "Invalid username or password";
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // simple authentication
+        if(username === "admin" && password === "1234"){
+
+            localStorage.setItem("loggedIn","true");
+
+            window.location.href = "index.html";
+
+        } else {
+            alert("Invalid username or password");
+        }
     }
-}
 
 </script>
 

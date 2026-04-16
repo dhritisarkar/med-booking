@@ -4,26 +4,11 @@
     <title>Clinic Management System</title>
 
     <style>
-        body {
-            font-family: Arial;
-            background:#eef7fc;
-            margin:0;
-            padding:0;
-            text-align:center;
-        }
+        body { font-family: Arial; background:#eef7fc; margin:0; text-align:center; }
+        h1 { background:#a7d8f0; padding:15px; margin:0; }
 
-        h1 {
-            background:#a7d8f0;
-            padding:15px;
-            margin:0;
-        }
+        .container { width:85%; margin:auto; }
 
-        .container {
-            width:85%;
-            margin:auto;
-        }
-
-        /* CARDS */
         .card {
             background:white;
             margin:20px auto;
@@ -32,23 +17,10 @@
             box-shadow:0 2px 6px rgba(0,0,0,0.1);
         }
 
-        /* TABLE */
-        table {
-            width:100%;
-            border-collapse:collapse;
-            margin-top:10px;
-        }
+        table { width:100%; border-collapse:collapse; margin-top:10px; }
+        th { background:#a7d8f0; }
+        td, th { padding:10px; border-bottom:1px solid #ddd; }
 
-        th {
-            background:#a7d8f0;
-        }
-
-        td, th {
-            padding:10px;
-            border-bottom:1px solid #ddd;
-        }
-
-        /* INPUTS */
         input, select {
             padding:8px;
             margin:5px;
@@ -56,31 +28,19 @@
             border-radius:4px;
         }
 
-        /* BUTTONS */
         button {
             padding:7px 12px;
-            margin:4px;
             border:none;
             border-radius:4px;
-            cursor:pointer;
             background:#a7d8f0;
+            cursor:pointer;
         }
 
-        button:hover {
-            background:#8cc9e8;
-        }
+        button:hover { background:#8cc9e8; }
 
-        /* DELETE BUTTON */
-        .delete-btn {
-            background:#ff6b6b;
-            color:white;
-        }
+        .delete-btn { background:#ff6b6b; color:white; }
+        .delete-btn:hover { background:#e05555; }
 
-        .delete-btn:hover {
-            background:#e05555;
-        }
-
-        /* LOGOUT BUTTON */
         .logout-btn {
             position:absolute;
             top:15px;
@@ -89,32 +49,11 @@
             color:white;
         }
 
-        /* FLEX ROW */
         .flex-row {
             display:flex;
             justify-content:center;
             flex-wrap:wrap;
             gap:10px;
-            margin-bottom:10px;
-        }
-
-        /* MODAL */
-        .modal {
-            display:none;
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background:white;
-            margin:10% auto;
-            padding:20px;
-            width:300px;
-            border-radius:8px;
         }
     </style>
 </head>
@@ -122,8 +61,8 @@
 <body>
 
 <script>
-    if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html";
+    if(localStorage.getItem("loggedIn") !== "true"){
+        window.location.href="login.html";
     }
 </script>
 
@@ -138,7 +77,7 @@
         <h2>Doctors</h2>
 
         <div class="flex-row">
-            <input type="text" id="doctorName" placeholder="Doctor Name">
+            <input id="doctorName" placeholder="Doctor Name">
             <button onclick="addDoctor()">Add Doctor</button>
         </div>
 
@@ -159,15 +98,18 @@
         <h2>Patients</h2>
 
         <div class="flex-row">
-
-            <input type="text" id="search" placeholder="Search patient..." onkeyup="loadPatients()">
-
+            <input id="search" placeholder="Search..." onkeyup="loadPatients()">
             <input id="patientName" placeholder="Name">
-            <input id="patientGender" placeholder="Gender">
+
+            <select id="patientGender">
+                <option value="">Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+
             <input id="patientPhone" placeholder="Phone">
-
             <button onclick="addPatient()">Add Patient</button>
-
         </div>
 
         <table>
@@ -190,12 +132,25 @@
 
         <div class="flex-row">
             <input type="date" id="date">
-            <input type="time" id="time">
+
+            <select id="time">
+                <option value="">Time</option>
+                <option value="11:00:00">11:00 AM</option>
+                <option value="11:30:00">11:30 AM</option>
+                <option value="12:00:00">12:00 PM</option>
+                <option value="13:00:00">1:00 PM</option>
+                <option value="13:30:00">1:30 PM</option>
+                <option value="14:00:00">2:00 PM</option>
+                <option value="14:30:00">2:30 PM</option>
+                <option value="15:00:00">3:00 PM</option>
+                <option value="15:30:00">3:30 PM</option>
+                <option value="16:00:00">4:00 PM</option>
+            </select>
 
             <select id="patientId"></select>
             <select id="doctorId"></select>
 
-            <button onclick="bookAppointment()">Book Appointment</button>
+            <button onclick="bookAppointment()">Book</button>
         </div>
 
         <table>
@@ -214,29 +169,12 @@
 
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-    <div class="modal-content">
-        <h3>Edit Patient</h3>
-
-        <input id="editName"><br>
-        <input id="editGender"><br>
-        <input id="editPhone"><br><br>
-
-        <button onclick="saveEdit()">Save</button>
-        <button onclick="closeModal()">Cancel</button>
-
-    </div>
-</div>
-
 <script>
 
     function logout(){
         localStorage.removeItem("loggedIn");
         window.location.href="login.html";
     }
-
-    let editId = null;
 
     // LOAD DOCTORS
     async function loadDoctors(){
@@ -253,6 +191,7 @@
             <td>${d.name}</td>
             <td>
                 <button onclick="editDoctor(${d.doctor_id},'${d.name}')">Edit</button>
+                <button class="delete-btn" onclick="deleteDoctor(${d.doctor_id})">Delete</button>
             </td>
             </tr>`;
 
@@ -278,7 +217,6 @@
             <td>${p.gender}</td>
             <td>${p.phone}</td>
             <td>
-            <button onclick="openEdit(${p.patient_id},'${p.name}','${p.gender}','${p.phone}')">Edit</button>
             <button class="delete-btn" onclick="deletePatient(${p.patient_id})">Delete</button>
             </td>
             </tr>`;
@@ -308,8 +246,13 @@
         });
     }
 
-    // ADD FUNCTIONS
+    // ADD PATIENT
     async function addPatient(){
+        if(!/^\d{10}$/.test(patientPhone.value)){
+            alert("Invalid phone number");
+            return;
+        }
+
         await fetch("http://localhost:3000/add-patient",{
             method:"POST",
             headers:{ "Content-Type":"application/json"},
@@ -319,9 +262,11 @@
                 phone:patientPhone.value
             })
         });
+
         loadPatients();
     }
 
+    // ADD DOCTOR
     async function addDoctor(){
         await fetch("http://localhost:3000/add-doctor",{
             method:"POST",
@@ -331,51 +276,14 @@
         loadDoctors();
     }
 
-    async function bookAppointment(){
-        const appointment_date = date.value + " " + time.value;
-
-        await fetch("http://localhost:3000/add-appointment",{
-            method:"POST",
-            headers:{ "Content-Type":"application/json"},
-            body:JSON.stringify({
-                patient_id:patientId.value,
-                doctor_id:doctorId.value,
-                appointment_date
-            })
-        });
-        loadAppointments();
-    }
-
-    // EDIT
-    function openEdit(id,name,gender,phone){
-        editId=id;
-        editName.value=name;
-        editGender.value=gender;
-        editPhone.value=phone;
-        modal.style.display="block";
-    }
-
-    function closeModal(){
-        modal.style.display="none";
-    }
-
-    function saveEdit(){
-        fetch(`http://localhost:3000/update-patient/${editId}`,{
-            method:"PUT",
-            headers:{ "Content-Type":"application/json"},
-            body:JSON.stringify({
-                name:editName.value,
-                gender:editGender.value,
-                phone:editPhone.value
-            })
-        }).then(()=>{
-            closeModal();
-            loadPatients();
-        });
-    }
-
+    // EDIT DOCTOR
     function editDoctor(id,name){
-        const newName = prompt("New name:", name);
+        const newName = prompt("Enter new doctor name:", name);
+
+        if(!newName || newName.trim()===""){
+            alert("Name cannot be empty");
+            return;
+        }
 
         fetch(`http://localhost:3000/update-doctor/${id}`,{
             method:"PUT",
@@ -384,8 +292,51 @@
         }).then(loadDoctors);
     }
 
-    // DELETE
+    // DELETE DOCTOR
+    function deleteDoctor(id){
+        if(!confirm("Delete this doctor?")) return;
+
+        fetch(`http://localhost:3000/delete-doctor/${id}`,{method:"DELETE"})
+        .then(res=>{
+            if(!res.ok){
+                alert("Doctor has appointments");
+            }
+            loadDoctors();
+        });
+    }
+
+    // BOOK APPOINTMENT
+    async function bookAppointment(){
+
+        if(!date.value || !time.value){
+            alert("Select date & time");
+            return;
+        }
+
+        const appointment_date = date.value + " " + time.value;
+
+        const res = await fetch("http://localhost:3000/add-appointment",{
+            method:"POST",
+            headers:{ "Content-Type":"application/json"},
+            body:JSON.stringify({
+                patient_id:patientId.value,
+                doctor_id:doctorId.value,
+                appointment_date
+            })
+        });
+
+        if(!res.ok){
+            alert("Time slot already booked");
+            return;
+        }
+
+        loadAppointments();
+    }
+
+    // DELETE PATIENT
     function deletePatient(id){
+        if(!confirm("WARNING!\nDeleting this patient removes appointments.")) return;
+
         fetch(`http://localhost:3000/delete-patient/${id}`,{method:"DELETE"})
         .then(()=>{
             loadPatients();
@@ -393,6 +344,7 @@
         });
     }
 
+    // DELETE APPOINTMENT
     function deleteAppointment(id){
         fetch(`http://localhost:3000/delete-appointment/${id}`,{method:"DELETE"})
         .then(loadAppointments);
