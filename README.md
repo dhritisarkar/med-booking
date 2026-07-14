@@ -1,183 +1,250 @@
-# Medical Appointment Booking System 🏥
+# Clinic Management System
 
-This project is a Medical Appointment Booking System developed as part of a DBMS course project.
-The goal of the project is to demonstrate how relational databases can be used to manage real-world systems such as hospital appointment scheduling.
+A full-stack Clinic Management System built using **Node.js, Express.js, MariaDB, HTML, CSS, and JavaScript**.
 
-The system allows administrators to manage patients, doctors, and appointments, while ensuring proper relational integrity using foreign key constraints.
-
----
-
-## Project Overview
-
-The system manages:
-
-- Patient registration & management
-- Doctor records management
-- Appointment scheduling between patients and doctors
-- Relational mapping between database entities
-- Display of structured data through a web interface
-
-It demonstrates how a backend server interacts with a relational database and how frontend components communicate with backend APIs.
+The application provides a simple administrative interface for managing doctors, patients, and appointments while demonstrating the use of relational databases, RESTful APIs, and frontend-backend integration.
 
 ---
 
-## Technologies Used
+## Features
 
-- Node.js: Backend runtime environment
-- Express.js: Web server framework for API creation
-- MariaDB (MySQL): Relational database managemnet system
-- HTML + CSS: Frontend interface
-- Git and GitHub: Version control and project collaboration
-- JavaScript (Fetch API: Communication with backend APIs
-
----
-
-## Database Design
-
-The system follows a relational database model with three main entities:
-
-### 1️⃣ Patient
-Stores patient information such as:
-- Patient ID (Primary Key, Auto Increment)
-- Name
-- Gender
-- Phone Number
-
-### 2️⃣ Doctor
-Stores doctor details:
-- Doctor ID (Primary Key, Auto Increment)
-- Name
-Doctors can be dynamically added to the system by the administrator
-
-### 3️⃣ Appointment
-Connects patients and doctors using foreign keys:
-- Appointment ID (Primary Key. Auto Increment)
-- Patient ID (Foreign Key → Patient)
-- Doctor ID (Foreign Key → Doctor)
-- Appointment Date & Time (DATETIME)
-
-This table creates a many-to-one relationship between appointments and both patients and doctors
-
-This structure ensures:
-
-- Referential integrity
-- Elimination of redundancy
-- Proper relationship management using foreign keys
-
----
-
-## Features Implemented
-
-The system currently supports the following features:
-1) Patient Management
-- Add new patients
-- Automatically generated patient IDs
-- Display all patients in a table
-- Delete a patient with confirmation warning
-- Search patients using a search box (real-time filtering)
-- Edit patient details using a popup form
-
-When a patient is deleted, all associated appointments are also removed to maintain database consistency
-
-2) Doctor Management:
+### Doctor Management
 - Add new doctors
-- View all doctors in a dedicated table
-- Doctors are automatically available for appointment booking
 - Edit doctor details
+- Delete doctors
+- Input validation for doctor names
+- Automatic dashboard updates
 
-3) Appointment Management:
-- Book appointments for patients
-- Select doctors from a dropdown list
-- Choose predefined time slots
-- Store appointment date and time using DATETIME
-- View all appointments in a table
-- Delete appointments when required
+### Patient Management
+- Add new patients
+- Delete patients
+- Real-time patient search
+- Phone number validation
+- Automatic cascading deletion of related appointments
 
-Appointments display the following:
-- Appointment ID
-- Patient Name
-- Doctor Name
-- Date and Time
-  
-This information is retrieved using SQLJOIN queries.
-
-4) Authentication:
-The system includes a basic login system:
-- Login page with username and password
-- Access control using localStorage
-- Users must log in to access the system
-- Logout functionality is implemented
-
----
-
-## API Endpoints Implemented
-
-- `GET /doctors` → Retrieve all doctors
-- `GET /patients` → Retrieve all patients (with search support)
-- `GET /appointments` → Retrieve appointment details using JOIN
-- `POST /add-patient` → Add a new patient
-- `POST /add-appointment` → Book a new appointment
-- `POST /add-doctor` → Adds a new doctor to the system
-- `DELETE /delete-patient/:id` → Delete a patient and their realted appointments
-- `DELETE /delete-appointment/:id` → Delete an appointment
-- `PUT /update-patient/:id` → Update patient details
-- `PUT /update-doctor/:id` → Update doctor details
-
----
-
-## User Interface
-
-The system includes a simple web interface designed for clarity and usability.
-
-Key UI features include:
-- Structured tables for doctors, pateints and appointments
-- Dropdown selection for doctors
+### Appointment Management
+- Book appointments
+- Doctor and patient dropdown selection
 - Fixed appointment time slots
-- Confirmation alerts for delete operations
-- Clean hospital-style UI with a professional baby-blue theme
-- Search bar for patients
-- Dropdown selection for both doctors and patients
-- Edit popup (modal) for updating records
-- Logout button for session control
+- Prevent duplicate appointment bookings
+- Delete appointments
+- Display appointments using SQL JOIN queries
 
-The UI communicates with the backend using the JavaScript Fetch API
+### Dashboard
+- Total Doctors
+- Total Patients
+- Total Appointments
+- Today's Date
+- Today's Appointment Count
 
----
+### Authentication
+- Secure login page
+- Session handling using Local Storage
+- Logout functionality
 
-## Current Status
-
-The system currently supports the core functionality required for appointment management.
-
-Implememted componenets include:
-- Database schema design
-- Foreign key relationships
-- SQLJOIN queries
-- Backend API development
-- Frontend integration
-- Doctor management
-- Patient management
-- Appointment scheduling
-- Delete operations with relational consistency
-- Improved UI design
-- Patient search functionality implemented
-- Edit functionality for patient and doctor added
-- Basic authentication system implemented
-- UI redesigned for better usability
-
-The application demonstrates full interaction between frontend, backend and database layers
+### User Experience
+- Responsive dashboard layout
+- Tab-based navigation
+- Toast notifications
+- Confirmation dialogs before deletion
+- Clean hospital-inspired user interface
 
 ---
 
-## Future Enhancements 🚧
+# Technologies Used
 
-Possible improvements include:
-
-- Role-based access control
-- Appointment conflict checkung
+| Layer | Technology |
+|--------|------------|
+| Frontend | HTML5, CSS3, JavaScript |
+| Backend | Node.js, Express.js |
+| Database | MariaDB (MySQL) |
+| API Communication | Fetch API |
+| Version Control | Git & GitHub |
 
 ---
 
-## Contributors
+# Project Structure
+
+```text
+Clinic-Management-System/
+
+backend/
+frontend/
+database/
+diagrams/
+docs/
+screenshots/
+
+README.md
+```
+
+---
+
+# Database Design
+
+The database follows a relational model consisting of three entities.
+
+## Patient
+
+- patient_id (Primary Key)
+- name
+- gender
+- phone
+
+## Doctor
+
+- doctor_id (Primary Key)
+- name
+
+## Appointment
+
+- appointment_id (Primary Key)
+- patient_id (Foreign Key)
+- doctor_id (Foreign Key)
+- appointment_date
+
+The Appointment table establishes the relationship between doctors and patients while maintaining referential integrity using foreign keys.
+
+---
+
+# REST API Endpoints
+
+| Method | Endpoint | Description |
+|----------|----------|-------------|
+| POST | /login | Administrator Login |
+| GET | /doctors | Retrieve all doctors |
+| GET | /patients | Retrieve all patients |
+| GET | /appointments | Retrieve all appointments |
+| GET | /stats | Dashboard statistics |
+| POST | /add-doctor | Add a doctor |
+| POST | /add-patient | Add a patient |
+| POST | /add-appointment | Book an appointment |
+| PUT | /update-doctor/:id | Update doctor |
+| DELETE | /delete-doctor/:id | Delete doctor |
+| DELETE | /delete-patient/:id | Delete patient |
+| DELETE | /delete-appointment/:id | Delete appointment |
+
+---
+
+# User Interface
+
+The frontend provides a clean administrative dashboard for managing clinic operations.
+
+Key interface features include:
+
+- Dashboard statistics cards
+- Doctor management panel
+- Patient management panel
+- Appointment scheduling panel
+- Real-time patient search
+- Dropdown-based appointment booking
+- Toast notifications
+- Delete confirmation dialogs
+- Responsive card-based layout
+
+Frontend components communicate with the backend using the JavaScript Fetch API.
+
+---
+
+# Architecture
+
+The overall system architecture is available in:
+
+```
+diagrams/architecture.png
+```
+
+---
+
+# Entity Relationship Diagram
+
+The database schema is documented in:
+
+```
+diagrams/er_diagram.png
+```
+
+---
+
+# Screenshots
+
+Representative screenshots of the application are available in the **screenshots/** directory.
+
+Included screenshots:
+
+- Login Page
+- Dashboard
+- Doctor Management
+- Patient Management
+- Appointment Management
+
+---
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/Clinic-Management-System.git
+```
+
+Navigate to the backend directory:
+
+```bash
+cd backend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file using `.env.example`.
+
+Start the server:
+
+```bash
+node server.js
+```
+
+Open `frontend/login.html` in your browser.
+
+---
+
+# Future Enhancements
+
+Potential improvements include:
+
+- Role-Based Access Control (RBAC)
+- Appointment editing
+- Doctor specialization support
+- Patient history management
+- Email/SMS appointment reminders
+- Calendar integration
+- Advanced dashboard analytics
+- Docker deployment
+- Unit and integration testing
+
+---
+
+# Documentation
+
+Additional project documentation is available in:
+
+```
+docs/Project_Report.pdf
+```
+
+---
+
+# Contributors
 
 - Dhriti Sarkar
 - Heer Patel
+
+---
+
+# License
+
+This project is released under the MIT License.
