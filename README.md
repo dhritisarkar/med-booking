@@ -185,7 +185,7 @@ Included screenshots:
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/Clinic-Management-System.git
+git clone https://github.com/Dhriti-Sarkar/med-booking.git
 ```
 
 Navigate to the backend directory:
