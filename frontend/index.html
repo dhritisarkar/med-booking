@@ -1,140 +1,216 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Clinic Management System</title>
 
-    <style>
-        body { font-family: Arial; background:#eef7fc; margin:0; text-align:center; }
-        h1 { background:#a7d8f0; padding:15px; margin:0; }
+    <link rel="stylesheet" href="assets/style.css">
 
-        .container { width:85%; margin:auto; }
-
-        .card {
-            background:white;
-            margin:20px auto;
-            padding:20px;
-            border-radius:8px;
-            box-shadow:0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        table { width:100%; border-collapse:collapse; margin-top:10px; }
-        th { background:#a7d8f0; }
-        td, th { padding:10px; border-bottom:1px solid #ddd; }
-
-        input, select {
-            padding:8px;
-            margin:5px;
-            border:1px solid #c8e3f2;
-            border-radius:4px;
-        }
-
-        button {
-            padding:7px 12px;
-            border:none;
-            border-radius:4px;
-            background:#a7d8f0;
-            cursor:pointer;
-        }
-
-        button:hover { background:#8cc9e8; }
-
-        .delete-btn { background:#ff6b6b; color:white; }
-        .delete-btn:hover { background:#e05555; }
-
-        .logout-btn {
-            position:absolute;
-            top:15px;
-            right:20px;
-            background:#ff4d4d;
-            color:white;
-        }
-
-        .flex-row {
-            display:flex;
-            justify-content:center;
-            flex-wrap:wrap;
-            gap:10px;
-        }
-    </style>
 </head>
 
 <body>
 
 <script>
-    if(localStorage.getItem("loggedIn") !== "true"){
-        window.location.href="login.html";
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "login.html";
     }
 </script>
 
-<button class="logout-btn" onclick="logout()">Logout</button>
+<header class="header">
 
-<h1>Clinic Management System</h1>
+    <div class="header-content">
+
+        <h1>Clinic Management System</h1>
+
+        <p>Appointment Scheduling & Patient Record Management</p>
+
+    </div>
+
+    <button class="logout-btn" onclick="logout()">
+        Logout
+    </button>
+
+</header>
 
 <div class="container">
 
-    <!-- DOCTORS -->
-    <div class="card">
+    <!-- Dashboard Statistics -->
+
+    <section class="stats-container">
+
+        <div class="stat-card">
+            <h3>Total Doctors</h3>
+            <p id="doctorCount">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Patients</h3>
+            <p id="patientCount">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Appointments</h3>
+            <p id="appointmentCount">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Today's Date</h3>
+            <p id="todayDate"></p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Today's Appointments</h3>
+            <p id="todayCount">0</p>
+        </div>
+
+    </section>
+
+    <!-- Navigation -->
+
+    <div class="tabs">
+
+        <button class="tab-btn active"
+                onclick="showSection('doctors', this)">
+            Doctors
+        </button>
+
+        <button class="tab-btn"
+                onclick="showSection('patients', this)">
+            Patients
+        </button>
+
+        <button class="tab-btn"
+                onclick="showSection('appointments', this)">
+            Appointments
+        </button>
+
+    </div>
+
+    <!-- Doctors -->
+
+    <section class="card section-card" id="doctors">
+
         <h2>Doctors</h2>
 
         <div class="flex-row">
-            <input id="doctorName" placeholder="Doctor Name">
-            <button onclick="addDoctor()">Add Doctor</button>
+
+            <input
+                    id="doctorName"
+                    type="text"
+                    placeholder="Doctor Name">
+
+            <button onclick="addDoctor()">
+                Add Doctor
+            </button>
+
         </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="doctorTable"></tbody>
-        </table>
-    </div>
+        <div class="table-wrapper">
 
-    <!-- PATIENTS -->
-    <div class="card">
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody id="doctorTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- Patients -->
+
+    <section class="card section-card" id="patients">
+
         <h2>Patients</h2>
 
         <div class="flex-row">
-            <input id="search" placeholder="Search..." onkeyup="loadPatients()">
-            <input id="patientName" placeholder="Name">
+
+            <input
+                    id="search"
+                    placeholder="Search Patient..."
+                    onkeyup="loadPatients()">
+
+            <input
+                    id="patientName"
+                    placeholder="Patient Name">
 
             <select id="patientGender">
+
                 <option value="">Gender</option>
                 <option>Male</option>
                 <option>Female</option>
                 <option>Other</option>
+
             </select>
 
-            <input id="patientPhone" placeholder="Phone">
-            <button onclick="addPatient()">Add Patient</button>
+            <input
+                    id="patientPhone"
+                    placeholder="Phone Number">
+
+            <button onclick="addPatient()">
+                Add Patient
+            </button>
+
         </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Phone</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="patientTable"></tbody>
-        </table>
-    </div>
+        <div class="table-wrapper">
 
-    <!-- APPOINTMENTS -->
-    <div class="card">
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody id="patientTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- Appointments -->
+
+    <section class="card section-card" id="appointments">
+
         <h2>Appointments</h2>
 
         <div class="flex-row">
-            <input type="date" id="date">
+
+            <input
+                    type="date"
+                    id="date">
 
             <select id="time">
+
                 <option value="">Time</option>
+
                 <option value="11:00:00">11:00 AM</option>
                 <option value="11:30:00">11:30 AM</option>
                 <option value="12:00:00">12:00 PM</option>
@@ -145,217 +221,53 @@
                 <option value="15:00:00">3:00 PM</option>
                 <option value="15:30:00">3:30 PM</option>
                 <option value="16:00:00">4:00 PM</option>
+
             </select>
 
             <select id="patientId"></select>
+
             <select id="doctorId"></select>
 
-            <button onclick="bookAppointment()">Book</button>
+            <button onclick="bookAppointment()">
+                Book Appointment
+            </button>
+
         </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Patient</th>
-                <th>Doctor</th>
-                <th>Date & Time</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="appointmentTable"></tbody>
-        </table>
-    </div>
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody id="appointmentTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
 
 </div>
 
-<script>
 
-    function logout(){
-        localStorage.removeItem("loggedIn");
-        window.location.href="login.html";
-    }
+<script src="./assets/config.js"></script>
+<script src="./assets/script.js"></script>
 
-    // LOAD DOCTORS
-    async function loadDoctors(){
-        const res = await fetch("http://localhost:3000/doctors");
-        const data = await res.json();
-
-        doctorTable.innerHTML="";
-        doctorId.innerHTML="";
-
-        data.forEach(d=>{
-            doctorTable.innerHTML+=`
-            <tr>
-            <td>${d.doctor_id}</td>
-            <td>${d.name}</td>
-            <td>
-                <button onclick="editDoctor(${d.doctor_id},'${d.name}')">Edit</button>
-                <button class="delete-btn" onclick="deleteDoctor(${d.doctor_id})">Delete</button>
-            </td>
-            </tr>`;
-
-            doctorId.innerHTML+=`<option value="${d.doctor_id}">${d.name}</option>`;
-        });
-    }
-
-    // LOAD PATIENTS
-    async function loadPatients(){
-        const search = document.getElementById("search").value;
-
-        const res = await fetch(`http://localhost:3000/patients?search=${search}`);
-        const data = await res.json();
-
-        patientTable.innerHTML="";
-        patientId.innerHTML="";
-
-        data.forEach((p,i)=>{
-            patientTable.innerHTML+=`
-            <tr>
-            <td>${i+1}</td>
-            <td>${p.name}</td>
-            <td>${p.gender}</td>
-            <td>${p.phone}</td>
-            <td>
-            <button class="delete-btn" onclick="deletePatient(${p.patient_id})">Delete</button>
-            </td>
-            </tr>`;
-
-            patientId.innerHTML+=`<option value="${p.patient_id}">${p.name}</option>`;
-        });
-    }
-
-    // LOAD APPOINTMENTS
-    async function loadAppointments(){
-        const res = await fetch("http://localhost:3000/appointments");
-        const data = await res.json();
-
-        appointmentTable.innerHTML="";
-
-        data.forEach(a=>{
-            appointmentTable.innerHTML+=`
-            <tr>
-            <td>${a.appointment_id}</td>
-            <td>${a.patient_name}</td>
-            <td>${a.doctor_name}</td>
-            <td>${new Date(a.appointment_date).toLocaleString()}</td>
-            <td>
-                <button class="delete-btn" onclick="deleteAppointment(${a.appointment_id})">Delete</button>
-            </td>
-            </tr>`;
-        });
-    }
-
-    // ADD PATIENT
-    async function addPatient(){
-        if(!/^\d{10}$/.test(patientPhone.value)){
-            alert("Invalid phone number");
-            return;
-        }
-
-        await fetch("http://localhost:3000/add-patient",{
-            method:"POST",
-            headers:{ "Content-Type":"application/json"},
-            body:JSON.stringify({
-                name:patientName.value,
-                gender:patientGender.value,
-                phone:patientPhone.value
-            })
-        });
-
-        loadPatients();
-    }
-
-    // ADD DOCTOR
-    async function addDoctor(){
-        await fetch("http://localhost:3000/add-doctor",{
-            method:"POST",
-            headers:{ "Content-Type":"application/json"},
-            body:JSON.stringify({name:doctorName.value})
-        });
-        loadDoctors();
-    }
-
-    // EDIT DOCTOR
-    function editDoctor(id,name){
-        const newName = prompt("Enter new doctor name:", name);
-
-        if(!newName || newName.trim()===""){
-            alert("Name cannot be empty");
-            return;
-        }
-
-        fetch(`http://localhost:3000/update-doctor/${id}`,{
-            method:"PUT",
-            headers:{ "Content-Type":"application/json"},
-            body:JSON.stringify({name:newName})
-        }).then(loadDoctors);
-    }
-
-    // DELETE DOCTOR
-    function deleteDoctor(id){
-        if(!confirm("Delete this doctor?")) return;
-
-        fetch(`http://localhost:3000/delete-doctor/${id}`,{method:"DELETE"})
-        .then(res=>{
-            if(!res.ok){
-                alert("Doctor has appointments");
-            }
-            loadDoctors();
-        });
-    }
-
-    // BOOK APPOINTMENT
-    async function bookAppointment(){
-
-        if(!date.value || !time.value){
-            alert("Select date & time");
-            return;
-        }
-
-        const appointment_date = date.value + " " + time.value;
-
-        const res = await fetch("http://localhost:3000/add-appointment",{
-            method:"POST",
-            headers:{ "Content-Type":"application/json"},
-            body:JSON.stringify({
-                patient_id:patientId.value,
-                doctor_id:doctorId.value,
-                appointment_date
-            })
-        });
-
-        if(!res.ok){
-            alert("Time slot already booked");
-            return;
-        }
-
-        loadAppointments();
-    }
-
-    // DELETE PATIENT
-    function deletePatient(id){
-        if(!confirm("WARNING!\nDeleting this patient removes appointments.")) return;
-
-        fetch(`http://localhost:3000/delete-patient/${id}`,{method:"DELETE"})
-        .then(()=>{
-            loadPatients();
-            loadAppointments();
-        });
-    }
-
-    // DELETE APPOINTMENT
-    function deleteAppointment(id){
-        fetch(`http://localhost:3000/delete-appointment/${id}`,{method:"DELETE"})
-        .then(loadAppointments);
-    }
-
-    // INIT
-    loadDoctors();
-    loadPatients();
-    loadAppointments();
-
-</script>
+<div id="toast"></div>
 
 </body>
+
 </html>
