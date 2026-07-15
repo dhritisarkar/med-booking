@@ -2,11 +2,12 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const crypto = require("crypto");
 const db = require("./db");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
 
 /* =========================
@@ -17,9 +18,16 @@ app.post("/login", (req, res) => {
 
     const { username, password } = req.body;
 
+    const passwordBuf = Buffer.from(password || "");
+    const adminPasswordBuf = Buffer.from(process.env.ADMIN_PASSWORD);
+
+    const passwordMatches =
+        passwordBuf.length === adminPasswordBuf.length &&
+        crypto.timingSafeEqual(passwordBuf, adminPasswordBuf);
+
     if (
         username === process.env.ADMIN_USERNAME &&
-        password === process.env.ADMIN_PASSWORD
+        passwordMatches
     ) {
 
         return res.json({
@@ -125,7 +133,23 @@ app.get("/appointments", (req, res) => {
 =========================== */
 app.post("/add-patient", (req, res) => {
 
-    const { name, gender, phone } = req.body;
+    const { gender } = req.body;
+    const name = (req.body.name || "").trim();
+    const phone = (req.body.phone || "").trim();
+
+    if (name === "") {
+        return res.status(400).json({
+            success: false,
+            message: "Patient name cannot be empty."
+        });
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+        return res.status(400).json({
+            success: false,
+            message: "Phone number must be exactly 10 digits."
+        });
+    }
 
     db.query(
         "INSERT INTO Patient (name, gender, phone) VALUES (?, ?, ?)",
@@ -205,6 +229,13 @@ app.post("/add-appointment", (req, res) => {
 
     const { patient_id, doctor_id, appointment_date } = req.body;
 
+    if (new Date(appointment_date) < new Date()) {
+        return res.status(400).json({
+            success: false,
+            message: "Cannot book an appointment in the past."
+        });
+    }
+
     db.query(
         "INSERT INTO Appointment (patient_id, doctor_id, appointment_date) VALUES (?, ?, ?)",
         [patient_id, doctor_id, appointment_date],
@@ -243,9 +274,18 @@ app.post("/add-appointment", (req, res) => {
 =========================== */
 app.put("/update-doctor/:id", (req, res) => {
 
+    const name = (req.body.name || "").trim();
+
+    if (name === "") {
+        return res.status(400).json({
+            success: false,
+            message: "Doctor name cannot be empty."
+        });
+    }
+
     db.query(
         "UPDATE Doctor SET name=? WHERE doctor_id=?",
-        [req.body.name, req.params.id],
+        [name, req.params.id],
         (err, result) => {
 
             if (err) {
@@ -398,11 +438,27 @@ app.get("/stats", (req, res) => {
         "SELECT COUNT(*) AS total FROM Doctor",
         (err, doctors) => {
 
+            if (err) {
+                console.error(err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Unable to fetch stats."
+                });
+            }
+
             stats.doctors = doctors[0].total;
 
             db.query(
                 "SELECT COUNT(*) AS total FROM Patient",
                 (err, patients) => {
+
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({
+                            success: false,
+                            message: "Unable to fetch stats."
+                        });
+                    }
 
                     stats.patients = patients[0].total;
 
@@ -410,11 +466,27 @@ app.get("/stats", (req, res) => {
                         "SELECT COUNT(*) AS total FROM Appointment",
                         (err, appointments) => {
 
+                            if (err) {
+                                console.error(err);
+                                return res.status(500).json({
+                                    success: false,
+                                    message: "Unable to fetch stats."
+                                });
+                            }
+
                             stats.appointments = appointments[0].total;
 
                             db.query(
                                 "SELECT COUNT(*) AS total FROM Appointment WHERE DATE(appointment_date)=CURDATE()",
                                 (err, today) => {
+
+                                    if (err) {
+                                        console.error(err);
+                                        return res.status(500).json({
+                                            success: false,
+                                            message: "Unable to fetch stats."
+                                        });
+                                    }
 
                                     stats.today = today[0].total;
 

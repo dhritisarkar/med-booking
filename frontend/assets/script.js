@@ -118,7 +118,7 @@ function showSection(sectionId, button){
             return;
         }
 
-        await fetch(API_BASE_URL +"/add-patient",{
+        const res = await fetch(API_BASE_URL +"/add-patient",{
             method:"POST",
             headers:{ "Content-Type":"application/json"},
             body:JSON.stringify({
@@ -127,6 +127,12 @@ function showSection(sectionId, button){
                 phone:patientPhone.value
             })
         });
+
+        if(!res.ok){
+            const data = await res.json();
+            showToast(data.message || "Unable to add patient","error");
+            return;
+        }
 
         loadPatients();
         loadStats();
@@ -163,7 +169,16 @@ function showSection(sectionId, button){
             method:"PUT",
             headers:{ "Content-Type":"application/json"},
             body:JSON.stringify({name:newName})
-        }).then(loadDoctors);
+        }).then(async res=>{
+
+            if(!res.ok){
+                const data = await res.json();
+                showToast(data.message || "Unable to update doctor","error");
+                return;
+            }
+
+            loadDoctors();
+        });
     }
 
     // DELETE DOCTOR
@@ -204,7 +219,8 @@ function showSection(sectionId, button){
         });
 
         if(!res.ok){
-            showToast("Time slot already booked","warning");
+            const data = await res.json();
+            showToast(data.message || "Unable to book appointment","warning");
             return;
         }
 
@@ -217,7 +233,14 @@ function showSection(sectionId, button){
         if(!confirm("WARNING!\nDeleting this patient removes appointments.")) return;
 
         fetch(`${API_BASE_URL}/delete-patient/${id}`,{method:"DELETE"})
-        .then(()=>{
+        .then(async res=>{
+
+            if(!res.ok){
+                const data = await res.json();
+                showToast(data.message || "Unable to delete patient","error");
+                return;
+            }
+
             loadPatients();
             loadAppointments();
         });
@@ -226,7 +249,16 @@ function showSection(sectionId, button){
     // DELETE APPOINTMENT
     function deleteAppointment(id){
         fetch(`${API_BASE_URL}/delete-appointment/${id}`,{method:"DELETE"})
-        .then(loadAppointments);
+        .then(async res=>{
+
+            if(!res.ok){
+                const data = await res.json();
+                showToast(data.message || "Unable to delete appointment","error");
+                return;
+            }
+
+            loadAppointments();
+        });
     }
  async function loadStats(){
 
