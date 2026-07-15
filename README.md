@@ -38,9 +38,7 @@ The application provides a simple administrative interface for managing doctors,
 - Today's Appointment Count
 
 ### Authentication
-- Secure login page
-- Session handling using Local Storage
-- Logout functionality
+Login page with client-side session state (localStorage). Note: this is a demo-appropriate implementation — a production version would use server-side sessions or JWT with httpOnly cookies.
 
 ### User Experience
 - Responsive dashboard layout
@@ -185,7 +183,7 @@ Included screenshots:
 Clone the repository:
 
 ```bash
-git clone https://github.com/Dhriti-Sarkar/med-booking.git
+git clone https://github.com/dhritisarkar/med-booking.git
 ```
 
 Navigate to the backend directory:
